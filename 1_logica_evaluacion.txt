@@ -1,0 +1,108 @@
+// Variables globales
+let jefaturas = {
+    jefatura1: { nombre: "Jefatura Norte", presos: [] },
+    jefatura2: { nombre: "Jefatura Sur", presos: [] },
+    jefatura3: { nombre: "Jefatura Este", presos: [] }
+};
+
+// Puntuaciones por tipo de pista
+const PUNTUACIONES = {
+    'A': 20,
+    'B': 15,
+    'C': 30
+};
+
+// Función para calcular puntuación total de un preso
+function calcularPuntuacion(pistas) {
+    let total = 0;
+    for (let pista of pistas) {
+        total += PUNTUACIONES[pista];
+    }
+    return total;
+}
+
+// Función para determinar estatus según puntuación
+function determinarEstatus(puntuacion) {
+    if (puntuacion > 85) return "Culpable";
+    if (puntuacion > 65) return "Sospechoso de alto riesgo";
+    return "Sospechoso de bajo riesgo";
+}
+
+// Función para contar tipos de pistas
+function contarPistas(presos) {
+    let conteo = { 'A': 0, 'B': 0, 'C': 0 };
+    for (let preso of presos) {
+        for (let pista of preso.pistas) {
+            conteo[pista]++;
+        }
+    }
+    return conteo;
+}
+
+// Función para encontrar pista más frecuente
+function pistaMasFrecuente(conteo) {
+    let max = Math.max(conteo.A, conteo.B, conteo.C);
+    if (conteo.A === max) return 'A';
+    if (conteo.B === max) return 'B';
+    return 'C';
+}
+
+// Función para calcular porcentajes
+function calcularPorcentajes(conteo) {
+    let total = conteo.A + conteo.B + conteo.C;
+    if (total === 0) return { 'A': 0, 'B': 0, 'C': 0 };
+    
+    return {
+        'A': ((conteo.A / total) * 100).toFixed(2),
+        'B': ((conteo.B / total) * 100).toFixed(2),
+        'C': ((conteo.C / total) * 100).toFixed(2)
+    };
+}
+
+// Función para agregar preso
+function agregarPreso(jefaturaId, pistas) {
+    const puntuacion = calcularPuntuacion(pistas);
+    const estatus = determinarEstatus(puntuacion);
+    
+    const preso = {
+        id: Date.now(),
+        pistas: pistas,
+        puntuacion: puntuacion,
+        estatus: estatus
+    };
+    
+    jefaturas[jefaturaId].presos.push(preso);
+    return preso;
+}
+
+// Función para obtener estadísticas de una jefatura
+function obtenerEstadisticas(jefatura) {
+    const conteoPistas = contarPistas(jefatura.presos);
+    const pistaFrecuente = pistaMasFrecuente(conteoPistas);
+    const porcentajes = calcularPorcentajes(conteoPistas);
+    
+    return {
+        totalPresos: jefatura.presos.length,
+        conteoPistas: conteoPistas,
+        pistaMasFrecuente: pistaFrecuente,
+        porcentajes: porcentajes
+    };
+}
+
+// Función para procesar todas las jefaturas
+function procesarTodasJefaturas() {
+    const resultados = {};
+    for (let key in jefaturas) {
+        resultados[key] = {
+            nombre: jefaturas[key].nombre,
+            presos: jefaturas[key].presos,
+            estadisticas: obtenerEstadisticas(jefaturas[key])
+        };
+    }
+    return resultados;
+}
+
+// Función para limpiar datos de una jefatura
+function limpiarJefatura(jefaturaId) {
+    jefaturas[jefaturaId].presos = [];
+}

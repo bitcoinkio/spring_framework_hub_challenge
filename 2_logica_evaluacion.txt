@@ -1,0 +1,118 @@
+// Variables globales
+let cuentas = [];
+let contadorCuentas = 0;
+
+// Tipos de cuenta y tasas de interés
+const TIPOS_CUENTA = {
+    1: { nombre: "Ahorro", interes: 0.10 },
+    2: { nombre: "Corriente", interes: 0.08 },
+    3: { nombre: "FAL", interes: 0.12 },
+    4: { nombre: "Préstamo", interes: 0.00 }
+};
+
+// Función para crear una nueva cuenta
+function crearCuenta(numeroCuenta, cedula, nombre, tipoCuenta, saldo) {
+    const cuenta = {
+        id: ++contadorCuentas,
+        numeroCuenta: numeroCuenta,
+        cedula: cedula,
+        nombre: nombre,
+        tipoCuenta: tipoCuenta,
+        tipoNombre: TIPOS_CUENTA[tipoCuenta].nombre,
+        saldo: parseFloat(saldo),
+        interes: TIPOS_CUENTA[tipoCuenta].interes,
+        montoInteres: 0,
+        saldoNuevo: 0
+    };
+    
+    // Calcular interés y saldo nuevo
+    cuenta.montoInteres = cuenta.saldo * cuenta.interes;
+    cuenta.saldoNuevo = cuenta.saldo + cuenta.montoInteres;
+    
+    cuentas.push(cuenta);
+    return cuenta;
+}
+
+// Función para calcular datos de una cuenta
+function calcularDatosCuenta(cuenta) {
+    cuenta.montoInteres = cuenta.saldo * cuenta.interes;
+    cuenta.saldoNuevo = cuenta.saldo + cuenta.montoInteres;
+    return cuenta;
+}
+
+// Función para obtener estadísticas del banco
+function obtenerEstadisticasBanco() {
+    if (cuentas.length === 0) {
+        return {
+            totalClientes: { 1: 0, 2: 0, 3: 0, 4: 0 },
+            totalMontoInteres: 0,
+            totalSaldosNuevos: 0,
+            clienteMayorSaldo: null,
+            clienteMenorSaldo: null
+        };
+    }
+    
+    // Contar clientes por tipo
+    let totalClientes = { 1: 0, 2: 0, 3: 0, 4: 0 };
+    let totalMontoInteres = 0;
+    let totalSaldosNuevos = 0;
+    
+    cuentas.forEach(cuenta => {
+        totalClientes[cuenta.tipoCuenta]++;
+        totalMontoInteres += cuenta.montoInteres;
+        totalSaldosNuevos += cuenta.saldoNuevo;
+    });
+    
+    // Encontrar cliente con mayor y menor saldo nuevo
+    let clienteMayorSaldo = cuentas[0];
+    let clienteMenorSaldo = cuentas[0];
+    
+    cuentas.forEach(cuenta => {
+        if (cuenta.saldoNuevo > clienteMayorSaldo.saldoNuevo) {
+            clienteMayorSaldo = cuenta;
+        }
+        if (cuenta.saldoNuevo < clienteMenorSaldo.saldoNuevo) {
+            clienteMenorSaldo = cuenta;
+        }
+    });
+    
+    return {
+        totalClientes: totalClientes,
+        totalMontoInteres: totalMontoInteres,
+        totalSaldosNuevos: totalSaldosNuevos,
+        clienteMayorSaldo: clienteMayorSaldo,
+        clienteMenorSaldo: clienteMenorSaldo
+    };
+}
+
+// Función para buscar cuenta por número
+function buscarCuenta(numeroCuenta) {
+    return cuentas.find(cuenta => cuenta.numeroCuenta === numeroCuenta);
+}
+
+// Función para eliminar cuenta
+function eliminarCuenta(numeroCuenta) {
+    const index = cuentas.findIndex(cuenta => cuenta.numeroCuenta === numeroCuenta);
+    if (index !== -1) {
+        cuentas.splice(index, 1);
+        return true;
+    }
+    return false;
+}
+
+// Función para actualizar saldo de cuenta
+function actualizarSaldo(numeroCuenta, nuevoSaldo) {
+    const cuenta = buscarCuenta(numeroCuenta);
+    if (cuenta) {
+        cuenta.saldo = parseFloat(nuevoSaldo);
+        calcularDatosCuenta(cuenta);
+        return true;
+    }
+    return false;
+}
+
+// Función para limpiar todas las cuentas
+function limpiarCuentas() {
+    cuentas = [];
+    contadorCuentas = 0;
+}

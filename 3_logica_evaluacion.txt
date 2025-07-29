@@ -1,0 +1,61 @@
+// Función para calcular F(x) según el signo de x
+function calcularFx(x) {
+    let resultado;
+    
+    if (x >= 0) {
+        // Para X positivo o cero: F(x) = (x-2)²/2 + (x-4)⁴/4 + (x-6)⁶/6
+        const termino1 = Math.pow(x - 2, 2) / 2;
+        const termino2 = Math.pow(x - 4, 4) / 4;
+        const termino3 = Math.pow(x - 6, 6) / 6;
+        resultado = termino1 + termino2 + termino3;
+    } else {
+        // Para X negativo: F(x) = (x+2)²/2 + (x+4)⁴/4 + (x+6)⁶/6
+        const termino1 = Math.pow(x + 2, 2) / 2;
+        const termino2 = Math.pow(x + 4, 4) / 4;
+        const termino3 = Math.pow(x + 6, 6) / 6;
+        resultado = termino1 + termino2 + termino3;
+    }
+    
+    return resultado;
+}
+
+// Función para calcular cada término individualmente (para mostrar detalle)
+function calcularTerminos(x) {
+    if (x >= 0) {
+        return {
+            termino1: Math.pow(x - 2, 2) / 2,
+            termino2: Math.pow(x - 4, 4) / 4,
+            termino3: Math.pow(x - 6, 6) / 6
+        };
+    } else {
+        return {
+            termino1: Math.pow(x + 2, 2) / 2,
+            termino2: Math.pow(x + 4, 4) / 4,
+            termino3: Math.pow(x + 6, 6) / 6
+        };
+    }
+}
+
+// Función para validar entrada numérica
+function validarEntrada(valor) {
+    const numero = parseFloat(valor);
+    return !isNaN(numero) && isFinite(numero);
+}
+
+// Función para formatear números grandes
+function formatearNumero(numero) {
+    if (Math.abs(numero) > 1e10) {
+        return numero.toExponential(6);
+    }
+    return numero.toFixed(6);
+}
+
+// Función para generar tabla de valores
+function generarTablaValores(rangoInicio, rangoFin, paso) {
+    const resultados = [];
+    for (let x = rangoInicio; x <= rangoFin; x += paso) {
+        const fx = calcularFx(x);
+        resultados.push({ x: x, fx: fx });
+    }
+    return resultados;
+}
